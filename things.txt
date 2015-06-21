@@ -1,0 +1,8 @@
+#'It should create rovers with an initial position and orientation'
+#'When rover receives a character array of commands. It '
+# 'should have a setCommands function'
+# 'should accept a char array as a list of command'
+# 'should reject other format of commands'
+#'The rober obeys commands.'
+#'It should Implement commands that move the rover forward/backward (f,b).'
+# 'It should increase y when looking north and f received'
