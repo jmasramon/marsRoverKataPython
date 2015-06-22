@@ -18,151 +18,13 @@ from pyspecs import given, when, then, and_, the
 # the rover moves up to the last possible point and reports the obstacle.
 
 # TODO: make tests independent of one another resetting the position and orientation (the test framework does not have a before()
-# TODO: abstract common control structures with higher order functions
-# TODO: separate tests from productions code
-# TODO: refactor tests
+# TODO: refactor tests following "effective unit testing" best practices
 
-def go_east(position):
-    return {'x': position['x'] + 1, 'y': position['y']}
-
-def go_west(position):
-    return {'x': position['x'] - 1, 'y': position['y']}
-
-def go_north(position):
-    # print('entered go_north')
-    return {'x': position['x'], 'y': position['y'] + 1}
-
-def go_south(position):
-    return {'x': position['x'], 'y': position['y'] - 1}
-
-def turn_east():
-    return 'E'
-
-def turn_west():
-    return 'W'
-
-def turn_north():
-    return 'N'
-
-def turn_south():
-    return 'S'
-
-
-def report_obstacle(position, temp_position):
-    position["obstacle"] = temp_position
-    return position
-
-
-class Navigator:
-    # map = ''
-    map_size = 0
-    obstacles = ()
-
-    # def setMap(self, lowerLefCorner, upperRightCorner):
-    def setMap(self, map_size):
-        # self.map = (lowerLefCorner, upperRightCorner)
-        # self.map_size = upperRightCorner[0]
-        self.map_size = map_size
-
-    def set_obstacles(self, obstacles):
-        self.obstacles = obstacles
-
-    def go_east(self, position):
-        print('entered navigator.go_east')
-        temp_position = go_east(position)
-        print(tuple(temp_position.values()))
-        if is_dic_in_dic_list(temp_position, self.obstacles):
-            return report_obstacle(position, temp_position)
-        elif temp_position['x'] > self.map_size:
-            temp_position['x'] = -(temp_position['x']-1)
-        return temp_position
-
-    def go_west(self, position):
-        print('entered navigator.go_west')
-        temp_position = go_west(position)
-        print(tuple(temp_position.values()))
-        if is_dic_in_dic_list(temp_position, self.obstacles):
-            return report_obstacle(position, temp_position)
-        elif temp_position['x'] < -self.map_size:
-            temp_position['x'] = -(temp_position['x']+1)
-        return temp_position
-
-    def go_north(self, position):
-        print('entered navigator.go_north')
-        temp_position = go_north(position)
-        print(tuple(temp_position.values()))
-        if is_dic_in_dic_list(temp_position, self.obstacles):
-            return report_obstacle(position, temp_position)
-        elif temp_position['y'] > self.map_size:
-            temp_position['y'] = -(temp_position['y']-1)
-        return temp_position
-
-    def go_south(self, position):
-        print('entered navigator.go_south')
-        temp_position = go_south(position)
-        print(tuple(temp_position.values()))
-        if is_dic_in_dic_list(temp_position, self.obstacles):
-            return report_obstacle(position, temp_position)
-        elif temp_position['y'] < -self.map_size:
-            temp_position['y'] = -(temp_position['y']+1)
-        return temp_position
-
-
-
-class Rover:
-    position = {}
-    orientation = ''
-    orders = ''
-    navigator = None
-
-    def __init__(self, initial_position, initial_orientation, navigator = ''):
-        self.position = initial_position
-        self.orientation = initial_orientation
-        self.navigator = navigator
-
-    def set_orders(self, new_orders):
-        self.orders = new_orders
-
-    def get_position(self):
-        return self.position
-
-    def get_orientation(self):
-        return self.orientation
-
-    def run_orders(self):
-        order_dict = {'fN': go_north, 'fS': go_south, 'fE': go_east, 'fW': go_west,
-                      'bN': go_south, 'bS': go_north, 'bE': go_west, 'bW': go_east,
-                      'lN': turn_west, 'lS': turn_east, 'lE': turn_north, 'lW': turn_south,
-                      'rN': turn_east, 'rS': turn_west, 'rE': turn_south, 'rW': turn_north}
-
-        for order in self.orders:
-            if order in ('f','b'):
-                if not self.navigator:
-                    # print('navigator not detected')
-                    self.position = order_dict[order + self.orientation](self.position)
-                else:
-                    # print('navigator detected')
-                    # print(getattr(self.navigator, (order_dict[order + self.orientation]).__name__))
-                    self.position = getattr(self.navigator, (order_dict[order + self.orientation]).__name__)(self.position)
-            elif order in ('l', 'r'):
-                self.orientation = order_dict[order + self.orientation]()
+from Navigator import *
+from Rover import *
 
 
 CARDINAL_POINTS = ('N', 'S', 'E', 'W')
-
-def is_same_tuple(t1, t2):
-    return t1 == t2
-
-
-def is_same_dictionary(d1, d2):
-    return len(set(d1.items()) & set(d2.items())) == len(d1)
-
-
-def is_dic_in_dic_list(d, dl):
-    for dd in dl:
-        if (len(set(d.items()) & set(dd.items()))) >= 2:
-            return True
-    return False
 
 
 with given.a_rover:
@@ -171,13 +33,6 @@ with given.a_rover:
     starting_point = {'x': x, 'y': y}
     initial_direction = 'N'
     rover = Rover(starting_point, initial_direction)
-
-    assert is_same_tuple((1, 2), (1, 2)) is True
-    assert is_same_tuple((1, 2), (3, 4)) is False
-    assert is_same_dictionary({'x': 0, 'y': 1}, {'x': 0, 'y': 1}) is True
-    assert is_same_dictionary({'x': 0, 'y': 1}, {'x': 1, 'y': 1}) is False
-    assert is_dic_in_dic_list({'x': -1, 'y': 2}, ({'x': 1, 'y': 1}, {'x': -1, 'y': 2}, {'x': -2, 'y': -2})) is True
-    assert is_dic_in_dic_list({'x': 0, 'y': 1}, ({'x': 1, 'y': 1}, {'x': -1, 'y': 2}, {'x': -2, 'y': -2})) is False
 
 
     the(isinstance(rover, Rover)).should.be(True)
