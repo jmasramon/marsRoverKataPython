@@ -23,9 +23,7 @@ from pyspecs import given, when, then, and_, the
 from Navigator import *
 from Rover import *
 
-
 CARDINAL_POINTS = ('N', 'S', 'E', 'W')
-
 
 with given.a_rover:
     x = 0
@@ -33,7 +31,6 @@ with given.a_rover:
     starting_point = {'x': x, 'y': y}
     initial_direction = 'N'
     rover = Rover(starting_point, initial_direction)
-
 
     the(isinstance(rover, Rover)).should.be(True)
 
@@ -46,7 +43,6 @@ with given.a_rover:
             the(initial_direction in CARDINAL_POINTS).should.be(True)
 
     with when.supplied_with_a_character_command:
-
         with and_.the_rover_should_give_current_position:
             the(rover.position).should.be(starting_point)
 
@@ -172,6 +168,3 @@ with given.a_rover:
                 the(rover.position['y']).should.be(1)
                 the(is_same_dictionary(rover.position['obstacle'], {'x': -1, 'y': 2})).should.be(True)
                 the(rover.orientation).should.be('N')
-
-    # with when.go_somewhere:
-    #     navigator.go_somewhere({'x': 1, 'y': 1}, "east", lambda x, y: x > y, lambda x: x)
