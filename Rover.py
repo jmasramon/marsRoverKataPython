@@ -25,11 +25,8 @@ class Rover:
         for order in self.orders:
             if order in ('f','b'):
                 if not self.navigator:
-                    # print('navigator not detected')
                     self.position = order_dict[order + self.orientation](self.position)
                 else:
-                    # print('navigator detected')
-                    # print(getattr(self.navigator, (order_dict[order + self.orientation]).__name__))
                     self.position = getattr(self.navigator, (order_dict[order + self.orientation]).__name__)(self.position)
             elif order in ('l', 'r'):
                 self.orientation = order_dict[order + self.orientation]()

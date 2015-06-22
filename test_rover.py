@@ -172,3 +172,6 @@ with given.a_rover:
                 the(rover.position['y']).should.be(1)
                 the(is_same_dictionary(rover.position['obstacle'], {'x': -1, 'y': 2})).should.be(True)
                 the(rover.orientation).should.be('N')
+
+    # with when.go_somewhere:
+    #     navigator.go_somewhere({'x': 1, 'y': 1}, "east", lambda x, y: x > y, lambda x: x)
