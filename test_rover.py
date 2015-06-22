@@ -46,134 +46,129 @@ with given.a_rover:
             the(initial_direction in CARDINAL_POINTS).should.be(True)
 
     with when.supplied_with_a_character_command:
-        with then.the_rover_should_accept_it:
-            the(callable(getattr(rover, 'set_orders'))).should.be(True)
 
         with and_.the_rover_should_give_current_position:
-            the(callable(getattr(rover, 'get_position'))).should.be(True)
-            the(rover.get_position()).should.be(starting_point)
+            the(rover.position).should.be(starting_point)
 
         with and_.the_rover_should_give_current_orientation:
-            the(callable(getattr(rover, 'get_orientation'))).should.be(True)
-            the(rover.get_orientation()).should.be('N')
+            the(rover.orientation).should.be('N')
 
         with and_.the_rover_should_accept_f_command_and_go_forward:
-            rover.set_orders('f')
+            rover.orders = 'f'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': 1})).should.be(True)
-            the(rover.get_orientation()).should.be('N')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': 1})).should.be(True)
+            the(rover.orientation).should.be('N')
 
         with and_.the_rover_should_accept_b_command_and_go_backward:
-            rover.set_orders('b')
+            rover.orders = 'b'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': 0})).should.be(True)
-            the(rover.get_orientation()).should.be('N')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': 0})).should.be(True)
+            the(rover.orientation).should.be('N')
 
         with and_.the_rover_should_accept_l_command_and_orient_left:
-            rover.set_orders('l')
+            rover.orders = 'l'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': 0})).should.be(True)
-            the(rover.get_orientation()).should.be('W')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': 0})).should.be(True)
+            the(rover.orientation).should.be('W')
 
         with and_.the_rover_should_accept_r_command_and_orient_right:
-            rover.set_orders('r')
+            rover.orders = 'r'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': 0})).should.be(True)
-            the(rover.get_orientation()).should.be('N')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': 0})).should.be(True)
+            the(rover.orientation).should.be('N')
 
     with when.supplied_with_a_character_array_of_commands:
         with then.the_rover_should_do_as_commanded:
-            rover.set_orders('flf')
+            rover.orders = 'flf'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': -1, 'y': 1})).should.be(True)
-            the(rover.get_orientation()).should.be('W')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': -1, 'y': 1})).should.be(True)
+            the(rover.orientation).should.be('W')
 
-            rover.set_orders('brb')
+            rover.orders = 'brb'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': 0})).should.be(True)
-            the(rover.get_orientation()).should.be('N')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': 0})).should.be(True)
+            the(rover.orientation).should.be('N')
 
-            rover.set_orders('flflflfl')
+            rover.orders = 'flflflfl'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': 0})).should.be(True)
-            the(rover.get_orientation()).should.be('N')
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': 0})).should.be(True)
+            the(rover.orientation).should.be('N')
 
     with when.supplied_with_a_navigator:
         navigator = Navigator()
-        # navigator.setMap((-3,-3), (3,3))
         MAP_SIZE = 3
-        navigator.setMap(MAP_SIZE)
+        navigator.map_size = MAP_SIZE
         rover = Rover(starting_point, initial_direction, navigator)
 
         with then.the_rover_should_wrap_from_the_upper_edge:
-            rover.set_orders('ffff')
+            rover.orders = 'ffff'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': -MAP_SIZE})).should.be(True)
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': -MAP_SIZE})).should.be(True)
 
         with and_.the_rover_should_wrap_from_the_lower_edge:
-            rover.set_orders('b')
+            rover.orders = 'b'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': 0, 'y': MAP_SIZE})).should.be(True)
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': 0, 'y': MAP_SIZE})).should.be(True)
 
         with and_.the_rover_should_wrap_from_the_left_edge:
-            rover.set_orders('lffff')
+            rover.orders = 'lffff'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': MAP_SIZE, 'y': MAP_SIZE})).should.be(True)
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': MAP_SIZE, 'y': MAP_SIZE})).should.be(True)
 
         with and_.the_rover_should_wrap_from_the_right_edge:
-            rover.set_orders('rrf')
+            rover.orders = 'rrf'
             rover.run_orders()
-            print(rover.get_position())
-            the(is_same_dictionary(rover.get_position(), {'x': -MAP_SIZE, 'y': MAP_SIZE})).should.be(True)
+            print(rover.position)
+            the(is_same_dictionary(rover.position, {'x': -MAP_SIZE, 'y': MAP_SIZE})).should.be(True)
 
     with when.supplied_with_obstacles:
         obstacles = ({'x': 1, 'y': 1}, {'x': -1, 'y': 2}, {'x': -2, 'y': -2}, {'x': -2, 'y': -MAP_SIZE})
-        navigator.set_obstacles(obstacles)
+        navigator.obstacles = obstacles
         rover = Rover(starting_point, initial_direction, navigator)
 
         with then.the_rover_should_avoid_them:
             with and_.the_rover_goes_to_the_E:
-                rover.set_orders('frfff')
+                rover.orders = 'frfff'
                 rover.run_orders()
-                print(rover.get_position())
-                the(rover.get_position()['x']).should.be(0)
-                the(rover.get_position()['y']).should.be(1)
-                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': 1, 'y': 1})).should.be(True)
-                the(rover.get_orientation()).should.be('E')
+                print(rover.position)
+                the(rover.position['x']).should.be(0)
+                the(rover.position['y']).should.be(1)
+                the(is_same_dictionary(rover.position['obstacle'], {'x': 1, 'y': 1})).should.be(True)
+                the(rover.orientation).should.be('E')
 
             with and_.the_rover_goes_to_the_W:
-                rover.set_orders('lflfff')
+                rover.orders = 'lflfff'
                 rover.run_orders()
-                print(rover.get_position())
-                the(rover.get_position()['x']).should.be(0)
-                the(rover.get_position()['y']).should.be(2)
-                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': -1, 'y': 2})).should.be(True)
-                the(rover.get_orientation()).should.be('W')
+                print(rover.position)
+                the(rover.position['x']).should.be(0)
+                the(rover.position['y']).should.be(2)
+                the(is_same_dictionary(rover.position['obstacle'], {'x': -1, 'y': 2})).should.be(True)
+                the(rover.orientation).should.be('W')
 
             with and_.the_rover_goes_to_the_S:
-                rover.set_orders('lfrfflfffff')
+                rover.orders = 'lfrfflfffff'
                 rover.run_orders()
-                print(rover.get_position())
-                the(rover.get_position()['x']).should.be(-2)
-                the(rover.get_position()['y']).should.be(-1)
-                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': -2, 'y': -2})).should.be(True)
-                the(rover.get_orientation()).should.be('S')
+                print(rover.position)
+                the(rover.position['x']).should.be(-2)
+                the(rover.position['y']).should.be(-1)
+                the(is_same_dictionary(rover.position['obstacle'], {'x': -2, 'y': -2})).should.be(True)
+                the(rover.orientation).should.be('S')
 
             with and_.the_rover_goes_to_the_N:
-                rover.set_orders('lflfffff')
+                rover.orders = 'lflfffff'
                 rover.run_orders()
-                print(rover.get_position())
-                the(rover.get_position()['x']).should.be(-1)
-                the(rover.get_position()['y']).should.be(1)
-                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': -1, 'y': 2})).should.be(True)
-                the(rover.get_orientation()).should.be('N')
+                print(rover.position)
+                the(rover.position['x']).should.be(-1)
+                the(rover.position['y']).should.be(1)
+                the(is_same_dictionary(rover.position['obstacle'], {'x': -1, 'y': 2})).should.be(True)
+                the(rover.orientation).should.be('N')

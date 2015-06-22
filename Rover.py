@@ -15,14 +15,6 @@ class Rover:
         self.orientation = initial_orientation
         self.navigator = navigator
 
-    def set_orders(self, new_orders):
-        self.orders = new_orders
-
-    def get_position(self):
-        return self.position
-
-    def get_orientation(self):
-        return self.orientation
 
     def run_orders(self):
         order_dict = {'fN': go_north, 'fS': go_south, 'fE': go_east, 'fW': go_west,

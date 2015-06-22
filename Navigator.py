@@ -5,18 +5,8 @@ from utilityFunctions import *
 # TODO: abstract common control structures with higher order functions
 
 class Navigator:
-    # map = ''
     map_size = 0
     obstacles = ()
-
-    # def setMap(self, lowerLefCorner, upperRightCorner):
-    def setMap(self, map_size):
-        # self.map = (lowerLefCorner, upperRightCorner)
-        # self.map_size = upperRightCorner[0]
-        self.map_size = map_size
-
-    def set_obstacles(self, obstacles):
-        self.obstacles = obstacles
 
     def go_east(self, position):
         print('entered navigator.go_east')
