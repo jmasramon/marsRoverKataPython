@@ -3,11 +3,11 @@ __author__ = 'jmasramon'
 from utilityFunctions import *
 import utilityFunctions
 
-# TODO: abstract common control structures with higher order functions
 
 class Navigator:
-    map_size = 0
-    obstacles = ()
+    def __init__(self, map_size=0, obstacles=()):
+        self.map_size = map_size
+        self.obstacles = obstacles
 
     def go_east(self, initial_position):
         return self._go_somewhere(initial_position, 'east', self._needs_east_wrapping, wrap_east)
@@ -45,21 +45,25 @@ class Navigator:
         return temp_position['y'] < -self.map_size
 
 
+wrap_positive_direction = lambda x: -(x - 1)
+wrap_negative_direction = lambda x: -(x + 1)
+
+
 def wrap_east(temp_position):
-    wrap(temp_position, 'x', lambda x: -(x - 1))
+    wrap(temp_position, 'x', wrap_positive_direction)
 
 
 def wrap_west(temp_position):
-    wrap(temp_position, 'x', lambda x: -(x + 1))
+    wrap(temp_position, 'x', wrap_negative_direction)
 
 
 def wrap_north(temp_position):
-    wrap(temp_position, 'y', lambda x: -(x - 1))
+    wrap(temp_position, 'y', wrap_positive_direction)
 
 
 def wrap_south(temp_position):
-    wrap(temp_position, 'y', lambda x: -(x + 1))
+    wrap(temp_position, 'y', wrap_negative_direction)
 
 
-def wrap(temp_postion, axis, wrap_algorithm):
-    temp_postion[axis] = wrap_algorithm(temp_postion[axis])
+def wrap(temp_position, axis, wrap_algorithm):
+    temp_position[axis] = wrap_algorithm(temp_position[axis])

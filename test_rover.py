@@ -17,7 +17,7 @@ from pyspecs import given, when, then, and_, the
 # Implement obstacle detection before each move to a new square. If a given sequence of commands encounters an obstacle,
 # the rover moves up to the last possible point and reports the obstacle.
 
-# TODO: make tests independent of one another resetting the position and orientation (the test framework does not have a before()
+# TODO: make tests independent of one another (the test framework does not have a before())
 # TODO: refactor tests following "effective unit testing" best practices
 
 from Navigator import *
