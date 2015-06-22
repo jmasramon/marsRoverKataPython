@@ -47,9 +47,16 @@ def turn_north():
 def turn_south():
     return 'S'
 
+
+def report_obstacle(position, temp_position):
+    position["obstacle"] = temp_position
+    return position
+
+
 class Navigator:
     # map = ''
     map_size = 0
+    obstacles = ()
 
     # def setMap(self, lowerLefCorner, upperRightCorner):
     def setMap(self, map_size):
@@ -57,41 +64,56 @@ class Navigator:
         # self.map_size = upperRightCorner[0]
         self.map_size = map_size
 
+    def set_obstacles(self, obstacles):
+        self.obstacles = obstacles
+
     def go_east(self, position):
-        # print('entered navigator.go_north')
+        print('entered navigator.go_east')
         temp_position = go_east(position)
-        if temp_position['x'] > self.map_size:
+        print(tuple(temp_position.values()))
+        if is_dic_in_dic_list(temp_position, self.obstacles):
+            return report_obstacle(position, temp_position)
+        elif temp_position['x'] > self.map_size:
             temp_position['x'] = -(temp_position['x']-1)
         return temp_position
 
     def go_west(self, position):
-        # print('entered navigator.go_north')
+        print('entered navigator.go_west')
         temp_position = go_west(position)
-        if temp_position['x'] < -self.map_size:
+        print(tuple(temp_position.values()))
+        if is_dic_in_dic_list(temp_position, self.obstacles):
+            return report_obstacle(position, temp_position)
+        elif temp_position['x'] < -self.map_size:
             temp_position['x'] = -(temp_position['x']+1)
         return temp_position
 
     def go_north(self, position):
-        # print('entered navigator.go_north')
+        print('entered navigator.go_north')
         temp_position = go_north(position)
-        if temp_position['y'] > self.map_size:
+        print(tuple(temp_position.values()))
+        if is_dic_in_dic_list(temp_position, self.obstacles):
+            return report_obstacle(position, temp_position)
+        elif temp_position['y'] > self.map_size:
             temp_position['y'] = -(temp_position['y']-1)
         return temp_position
 
     def go_south(self, position):
-        # print('entered navigator.go_north')
+        print('entered navigator.go_south')
         temp_position = go_south(position)
-        if temp_position['y'] < -self.map_size:
+        print(tuple(temp_position.values()))
+        if is_dic_in_dic_list(temp_position, self.obstacles):
+            return report_obstacle(position, temp_position)
+        elif temp_position['y'] < -self.map_size:
             temp_position['y'] = -(temp_position['y']+1)
         return temp_position
 
 
 
 class Rover:
-    position = ''
+    position = {}
     orientation = ''
     orders = ''
-    navigator = ''
+    navigator = None
 
     def __init__(self, initial_position, initial_orientation, navigator = ''):
         self.position = initial_position
@@ -126,16 +148,21 @@ class Rover:
                 self.orientation = order_dict[order + self.orientation]()
 
 
-
-cardinal_points = ('N', 'S', 'E', 'W')
-
+CARDINAL_POINTS = ('N', 'S', 'E', 'W')
 
 def is_same_tuple(t1, t2):
-    return sorted(t1) == sorted(t2)
+    return t1 == t2
 
 
 def is_same_dictionary(d1, d2):
     return len(set(d1.items()) & set(d2.items())) == len(d1)
+
+
+def is_dic_in_dic_list(d, dl):
+    for dd in dl:
+        if (len(set(d.items()) & set(dd.items()))) >= 2:
+            return True
+    return False
 
 
 with given.a_rover:
@@ -147,7 +174,11 @@ with given.a_rover:
 
     assert is_same_tuple((1, 2), (1, 2)) is True
     assert is_same_tuple((1, 2), (3, 4)) is False
-    # print(is_same_dictionary({'x': 0, 'y': 1}, {'x': 0, 'y': 1}))
+    assert is_same_dictionary({'x': 0, 'y': 1}, {'x': 0, 'y': 1}) is True
+    assert is_same_dictionary({'x': 0, 'y': 1}, {'x': 1, 'y': 1}) is False
+    assert is_dic_in_dic_list({'x': -1, 'y': 2}, ({'x': 1, 'y': 1}, {'x': -1, 'y': 2}, {'x': -2, 'y': -2})) is True
+    assert is_dic_in_dic_list({'x': 0, 'y': 1}, ({'x': 1, 'y': 1}, {'x': -1, 'y': 2}, {'x': -2, 'y': -2})) is False
+
 
     the(isinstance(rover, Rover)).should.be(True)
 
@@ -157,7 +188,7 @@ with given.a_rover:
             the(starting_point).should.contain('y')
 
         with then.the_initial_direction_should_belong_to_NSEW:
-            the(initial_direction in cardinal_points).should.be(True)
+            the(initial_direction in CARDINAL_POINTS).should.be(True)
 
     with when.supplied_with_a_character_command:
         with then.the_rover_should_accept_it:
@@ -226,7 +257,7 @@ with given.a_rover:
         navigator.setMap(MAP_SIZE)
         rover = Rover(starting_point, initial_direction, navigator)
 
-        with and_.the_rover_should_wrap_from_the_upper_edge:
+        with then.the_rover_should_wrap_from_the_upper_edge:
             rover.set_orders('ffff')
             rover.run_orders()
             print(rover.get_position())
@@ -250,3 +281,44 @@ with given.a_rover:
             print(rover.get_position())
             the(is_same_dictionary(rover.get_position(), {'x': -MAP_SIZE, 'y': MAP_SIZE})).should.be(True)
 
+    with when.supplied_with_obstacles:
+        obstacles = ({'x': 1, 'y': 1}, {'x': -1, 'y': 2}, {'x': -2, 'y': -2}, {'x': -2, 'y': -MAP_SIZE})
+        navigator.set_obstacles(obstacles)
+        rover = Rover(starting_point, initial_direction, navigator)
+
+        with then.the_rover_should_avoid_them:
+            with and_.the_rover_goes_to_the_E:
+                rover.set_orders('frfff')
+                rover.run_orders()
+                print(rover.get_position())
+                the(rover.get_position()['x']).should.be(0)
+                the(rover.get_position()['y']).should.be(1)
+                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': 1, 'y': 1})).should.be(True)
+                the(rover.get_orientation()).should.be('E')
+
+            with and_.the_rover_goes_to_the_W:
+                rover.set_orders('lflfff')
+                rover.run_orders()
+                print(rover.get_position())
+                the(rover.get_position()['x']).should.be(0)
+                the(rover.get_position()['y']).should.be(2)
+                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': -1, 'y': 2})).should.be(True)
+                the(rover.get_orientation()).should.be('W')
+
+            with and_.the_rover_goes_to_the_S:
+                rover.set_orders('lfrfflfffff')
+                rover.run_orders()
+                print(rover.get_position())
+                the(rover.get_position()['x']).should.be(-2)
+                the(rover.get_position()['y']).should.be(-1)
+                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': -2, 'y': -2})).should.be(True)
+                the(rover.get_orientation()).should.be('S')
+
+            with and_.the_rover_goes_to_the_N:
+                rover.set_orders('lflfffff')
+                rover.run_orders()
+                print(rover.get_position())
+                the(rover.get_position()['x']).should.be(-1)
+                the(rover.get_position()['y']).should.be(1)
+                the(is_same_dictionary(rover.get_position()['obstacle'], {'x': -1, 'y': 2})).should.be(True)
+                the(rover.get_orientation()).should.be('N')
